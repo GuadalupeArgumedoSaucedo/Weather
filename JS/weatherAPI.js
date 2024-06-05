@@ -19,25 +19,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Adding an event listener to the city select dropdown for the 'change' event
   citySelect.addEventListener("change", async (event) => {
-    // Finding the selected city from the cities array based on the dropdown's value
+    // Finding selected city 
     const selectedCity = cities.find(city => city.name === event.target.value);
     if (selectedCity) {
-      // Constructing the URL to fetch weather station data based on the city's coordinates
+      // URL fetches weather station data
         const stationLookupUrl = `https://api.weather.gov/points/${selectedCity.latitude},${selectedCity.longitude}`;
         try {
-          // Fetching the weather station data from the API
+          // Fetches weather station data from API
             const response = await fetch(stationLookupUrl);
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
-            // Parsing the JSON response to get the data
+            // Parsing the JSON (response to get the data)
             const data = await response.json();
-            // Extracting the URL for the weather forecast from the response data
+            // Extraces URL for weather forecast
             const weatherUrl = data.properties.forecast;
-            // Fetching the weather data from the extracted URL
+            // Fetches weather data from URL
             getWeather(weatherUrl);
         } catch (error) {
-          // Logging any errors that occur during the fetch
+          // possible errors
             console.error("Error fetching station lookup data:", error);
         }
     }
@@ -46,29 +46,39 @@ document.addEventListener("DOMContentLoaded", () => {
 //fetch and display the weather data
 async function getWeather(weatherUrl) {
   try {
-     // Parsing the JSON response (get weather data)
+     // Fetches weather data from URL
       const response = await fetch(weatherUrl);
       if (!response.ok) {
           throw new Error("Network response was not ok");
       }
+      // Parsing the JSON response (get weather data)
       const data = await response.json();
+      //Extracts forecast periods array from response data
       const forecastArray = data.properties.periods;
+      // Displays weather data in table
       displayWeather(forecastArray);
   } catch (error) {
+    // possible errors
       console.error("Error fetching weather data:", error);
   }
 }
 
+//display weather data in table
   function displayWeather(forecastArray) {
+    // Clear existing rows in table body
       weatherTableBody.innerHTML = "";
+       // Looping through each period
       forecastArray.forEach(period => {
+        // Creates new table row element
           const row = document.createElement("tr");
+          // Sets inner HTML of row (weather data for the period)
           row.innerHTML = `
               <td>${period.name}</td>
               <td>${period.temperature} ${period.temperatureUnit}</td>
               <td>${period.windDirection} ${period.windSpeed}</td>
               <td>${period.shortForecast}</td>
           `;
+          // Appending row to table body
           weatherTableBody.appendChild(row);
       });
   }
